@@ -1,0 +1,32 @@
+title: Detect RansomHub Ransomware Activity
+id: 6fd5f260-8a17-11ee-8c99-0242ac120002
+status: experimental
+description: Detects suspicious activities related to the RansomHub ransomware.
+references:
+    - Internal Research
+    - https://www.armstrongtechs.com/
+author: Armstrong Techs, Research Lab
+date: 2024/08/26
+modified: 22024/08/26
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image:
+            - 'C:\Windows\System32\cmd.exe'
+            - 'C:\Windows\System32\powershell.exe'
+        CommandLine|contains:
+            - 'vssadmin delete shadows /all /quiet'
+            - 'wbadmin delete catalog -quiet'
+            - 'bcdedit /set {default} recoveryenabled No'
+            - 'bcdedit /set {default} bootstatuspolicy ignoreallfailures'
+            - 'cipher /w:C:\'
+    condition: selection
+level: high
+tag:
+    - attack:execution
+    - attack:impact
+    - ransomware
+    - ransomhub
+    - CVE-2020-1472 (CVSS:10)

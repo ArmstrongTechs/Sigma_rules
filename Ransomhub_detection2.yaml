@@ -1,0 +1,59 @@
+title: High-Accuracy Detection of RansomHub Ransomware Activity
+id: b9235e60-8a19-11ee-8c99-0242ac120002
+status: experimental
+description: Detects high-fidelity indicators of RansomHub ransomware, including file, registry, process, and network activities.
+references:
+    - Internal Research
+    - https://www.armstrongtechs.com/
+author: Armstrong Techs, Research Lab
+date: 2024/08/26
+modified: 22024/08/26
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_cmd:
+        Image:
+            - 'C:\Windows\System32\cmd.exe'
+            - 'C:\Windows\System32\powershell.exe'
+        CommandLine|contains:
+            - 'vssadmin delete shadows /all /quiet'
+            - 'wbadmin delete catalog -quiet'
+            - 'bcdedit /set {default} recoveryenabled No'
+            - 'bcdedit /set {default} bootstatuspolicy ignoreallfailures'
+            - 'cipher /w:C:\'
+    selection_persistence:
+        Image|endswith:
+            - 'schtasks.exe'
+            - 'taskeng.exe'
+        CommandLine|contains:
+            - '/create'
+            - '/sc'
+            - '/tr'
+    selection_registry:
+        TargetObject|endswith:
+            - '\Software\Microsoft\Windows\CurrentVersion\Run'
+            - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+            - '\System\CurrentControlSet\Services\'
+        Details|contains:
+            - 'RansomHub'
+    selection_network:
+        Image|endswith:
+            - 'rundll32.exe'
+            - 'svchost.exe'
+        C2ServerIp|contains:
+            - '185.107.95.50' #Adding the C2 server IP addresses.
+            - '194.26.192.219'
+        C2ServerPort:
+            - 443
+            - 80
+    condition: selection_cmd or selection_persistence or selection_registry or selection_network
+level: critical
+tag:
+    - attack:execution
+    - attack:impact
+    - ransomware
+    - ransomhub
+    - persistence
+    - defense_evasion
+    - CVE-2020-1472 (CVSS:10)
