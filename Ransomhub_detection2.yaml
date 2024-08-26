@@ -57,3 +57,5 @@ tag:
     - persistence
     - defense_evasion
     - CVE-2020-1472 (CVSS:10)
+falsepositives:
+    - Legitimate system administration activities

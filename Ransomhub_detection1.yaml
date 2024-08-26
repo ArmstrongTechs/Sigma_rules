@@ -30,3 +30,5 @@ tag:
     - ransomware
     - ransomhub
     - CVE-2020-1472 (CVSS:10)
+falsepositives:
+    - Legitimate system administration activities
